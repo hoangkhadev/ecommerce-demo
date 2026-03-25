@@ -38,6 +38,7 @@ namespace Ecommerce.Api
 
             app.MapHealthChecks("/health");
             app.MapRootEndpoints();
+            app.MapAuthEndpoints();
 
             app.Run();
         }
