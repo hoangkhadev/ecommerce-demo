@@ -1,4 +1,6 @@
 using Ecommerce.Api.Endpoints;
+using Ecommerce.Infrastructure.Configurations;
+using Microsoft.Extensions.Options;
 
 namespace Ecommerce.Api
 {
@@ -11,7 +13,7 @@ namespace Ecommerce.Api
             // Add services to the container.
             builder.Services.AddAuthorization();
             builder.Services.AddAppDI();
-            builder.Services.AddHealthChecks();
+            builder.Services.AddHealthChecks().AddNpgSql(sp => sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.DefaultConnection);
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
