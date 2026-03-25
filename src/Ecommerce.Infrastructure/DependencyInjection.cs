@@ -13,6 +13,7 @@ namespace Ecommerce.Infrastructure
         public static IServiceCollection AddInfrastructureDI(this IServiceCollection services)
         {
             services.AddOptions<DatabaseOptions>().BindConfiguration(DatabaseOptions.SectionName);
+            services.AddOptions<JwtOptions>().BindConfiguration(JwtOptions.SectionName);
 
             services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
@@ -24,6 +25,7 @@ namespace Ecommerce.Infrastructure
                     sp.GetRequiredService<ApplicationDbContext>());
 
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<ITokenService, TokenService>();
 
             return services;
         }

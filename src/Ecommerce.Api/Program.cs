@@ -33,7 +33,7 @@ namespace Ecommerce.Api
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapHealthChecks("/health");

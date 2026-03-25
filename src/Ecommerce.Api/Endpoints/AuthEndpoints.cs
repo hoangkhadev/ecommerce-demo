@@ -31,6 +31,33 @@ namespace Ecommerce.Api.Endpoints
             .Produces<RegisterResponse>(StatusCodes.Status201Created)
             .Produces(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status500InternalServerError);
+
+            group.MapPost("/login", async (LoginCommand cmd, IMediator mediator) =>
+            {
+                try
+                {
+                    var response = await mediator.Send(cmd);
+                    return Results.Created("", response);
+                }
+                catch (ValidationException ex)
+                {
+                    var errors = ex.Errors.Select(x => new { x.PropertyName, x.ErrorMessage });
+                    return Results.BadRequest((object)new { Errors = errors });
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    return Results.Json(new { Message = ex.Message }, statusCode: 401);
+                }
+                catch (Exception ex)
+                {
+                    return Results.InternalServerError(new { Error = ex.Message });
+                }
+            })
+            .WithSummary("Login user account")
+            .Produces<LoginResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status500InternalServerError);
         }
     }
 }
