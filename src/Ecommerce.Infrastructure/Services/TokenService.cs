@@ -16,12 +16,12 @@ namespace Ecommerce.Infrastructure.Services
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
 
-            List<Claim> claims = new List<Claim>
-            {
-                new(JwtRegisteredClaimNames.Sub, userId.ToString()),
-                new("username", userName),
+            var idStr = userId.ToString();
+            List<Claim> claims = [
+                new(JwtRegisteredClaimNames.Sub, idStr),
+                new(JwtRegisteredClaimNames.PreferredUsername, userName),
                 new("role", userRole.ToString())
-            };
+            ];
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
