@@ -4,6 +4,7 @@ using Ecommerce.Infrastructure.Configurations;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace Ecommerce.Api
@@ -13,6 +14,9 @@ namespace Ecommerce.Api
         public static IServiceCollection AddAppDI(this IServiceCollection services)
         {
             services.AddApplicationDI().AddInfrastructureDI();
+
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            JwtSecurityTokenHandler.DefaultOutboundClaimTypeMap.Clear();
 
             services.AddAuthentication(options =>
             {
@@ -29,6 +33,9 @@ namespace Ecommerce.Api
                 options.TokenValidationParameters.IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Value.SecretKey));
                 options.TokenValidationParameters.ValidIssuer = jwtSettings.Value.Issuer;
                 options.TokenValidationParameters.ValidAudience = jwtSettings.Value.Audience;
+
+                options.TokenValidationParameters.NameClaimType = JwtRegisteredClaimNames.PreferredUsername;
+                options.TokenValidationParameters.RoleClaimType = "role";
             });
 
             return services;
