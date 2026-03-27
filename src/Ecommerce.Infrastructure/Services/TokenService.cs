@@ -11,7 +11,7 @@ namespace Ecommerce.Infrastructure.Services
 {
     public class TokenService(IOptions<JwtOptions> jwtOptions) : ITokenService
     {
-        public string GenerateToken(Guid userId, string userName, UserRole userRole)
+        public string GenerateToken(Guid userId, string userName, string userRole)
         {
             var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey));
             var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

@@ -31,16 +31,15 @@ namespace Ecommerce.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(u => u.Role)
-                .HasConversion(new EnumToStringConverter<UserRole>())
                 .HasMaxLength(20)
                 .IsUnicode(false)
-                .HasDefaultValue(UserRole.User);
+                .HasDefaultValue(UserRole.User.ToString());
 
             builder.HasData(new User
             {
                 Id = Guid.Parse("00000000-0000-0000-0000-000000000001"),
                 Username = "admin",
-                Role = UserRole.Admin,
+                Role = UserRole.Admin.ToString(),
                 Email = "admin@gmail.com",
                 PasswordHash = "$2a$11$LRd5H.ft39KbYuNrSilGquI0CydD7pHfftTqyqRb7IyZ3C1G/XjeW"
             });

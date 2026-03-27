@@ -1,5 +1,6 @@
 ﻿using Ecommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Ecommerce.Application.Common.Interfaces
 {
@@ -14,5 +15,7 @@ namespace Ecommerce.Application.Common.Interfaces
         DbSet<OrderItem> OrderItems { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
+        IExecutionStrategy CreateExecutionStrategy();
     }
 }

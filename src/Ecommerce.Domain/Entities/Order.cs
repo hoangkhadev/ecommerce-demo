@@ -15,7 +15,7 @@
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public decimal TotalAmount { get; set; }
-        public OrderStatus Status { get; set; } = OrderStatus.Pending;
-        public List<OrderItem> OrderItems { get; set; } = new();
+        public string Status { get; set; } = OrderStatus.Pending.ToString();
+        public List<OrderItem> OrderItems { get; set; } = [];
     }
 }

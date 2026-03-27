@@ -1,7 +1,7 @@
 ﻿using Ecommerce.Application.Common.Interfaces;
 using Ecommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Ecommerce.Infrastructure.Persistence
 {
@@ -14,6 +14,13 @@ namespace Ecommerce.Infrastructure.Persistence
         public DbSet<CartItem> CartItems => Set<CartItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+
+        public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken)
+        {
+            return await Database.BeginTransactionAsync(cancellationToken);
+        }
+
+        public IExecutionStrategy CreateExecutionStrategy() => Database.CreateExecutionStrategy();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

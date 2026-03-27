@@ -26,7 +26,7 @@ namespace Ecommerce.Infrastructure.Configurations
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             builder.Property(o => o.Status)
-                .HasDefaultValue(OrderStatus.Pending);
+                .HasDefaultValue(OrderStatus.Pending.ToString());
         }
     }
 }
