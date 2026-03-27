@@ -14,14 +14,13 @@ namespace Ecommerce.Api
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddAuthorization(options =>
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthorizationBuilder().AddPolicy("AdminOnly", policy =>
             {
-                options.AddPolicy("AdminOnly", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireRole(UserRole.Admin.ToString());
-                });
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole(UserRole.Admin.ToString());
             });
+
             builder.Services.AddAppDI();
             builder.Services.AddHealthChecks().AddNpgSql(sp => sp.GetRequiredService<IOptions<DatabaseOptions>>().Value.DefaultConnection);
 
