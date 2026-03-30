@@ -25,17 +25,24 @@ namespace Ecommerce.Application.Features.Cart.Commands
 
             // check product exists
             var product = await context.Products.Where(p => p.Id == request.ProductId)
-                .Select(p => new { p.Stock }).FirstOrDefaultAsync(cancellationToken)
+                .Select(p => new { p.Stock, p.Name }).FirstOrDefaultAsync(cancellationToken)
                 ?? throw new KeyNotFoundException($"Product with ID '{request.ProductId}' not found");
 
             // check product stock
-            if (product.Stock <= 0) throw new InvalidOperationException($"Product with ID '{request.ProductId} out of stock'");
+            if (product.Stock <= 0) throw new InvalidOperationException($"Product '{product.Name} is out of stock'");
 
             // check product exists from cart
             var productFromCart = userCart.CartItems.FirstOrDefault(ci => ci.ProductId == request.ProductId);
             if (productFromCart is not null)
             {
-                productFromCart.Quantity++;
+                if ((productFromCart.Quantity + 1) > product.Stock)
+                {
+                    throw new InvalidOperationException($"Only {product.Stock} items available in stock.");
+                }
+                else
+                {
+                    productFromCart.Quantity++;
+                }
             }
             else
             {

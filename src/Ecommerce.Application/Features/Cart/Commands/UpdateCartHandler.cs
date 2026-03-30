@@ -15,7 +15,7 @@ namespace Ecommerce.Application.Features.Cart.Commands
     {
         public async Task<UpdateCartResponse> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
         {
-            var cartItem = await context.Carts.Include(c => c.CartItems)
+            var cartItem = await context.Carts.Include(c => c.CartItems).ThenInclude(ci => ci.Product)
                 .Where(c => c.UserId == request.UserId)
                 .Select(c => c.CartItems.FirstOrDefault(ci => ci.ProductId == request.ProductId))
                 .FirstOrDefaultAsync(cancellationToken)
@@ -24,10 +24,19 @@ namespace Ecommerce.Application.Features.Cart.Commands
             switch (request.Type)
             {
                 case "increase":
+                    if ((cartItem.Quantity + 1) > cartItem.Product.Stock)
+                        throw new InvalidOperationException($"Only {cartItem.Product.Stock} items available in stock.");
                     cartItem.Quantity++;
                     break;
                 case "decrease":
-                    cartItem.Quantity--;
+                    if (cartItem.Quantity <= 1)
+                    {
+                        context.CartItems.Remove(cartItem);
+                    }
+                    else
+                    {
+                        cartItem.Quantity--;
+                    }
                     break;
                 case "remove":
                     context.CartItems.Remove(cartItem);
