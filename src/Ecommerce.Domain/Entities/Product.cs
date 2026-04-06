@@ -1,4 +1,6 @@
-﻿namespace Ecommerce.Domain.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Ecommerce.Domain.Entities
 {
     public class Product
     {
@@ -10,5 +12,6 @@
         public Guid CategoryId { get; set; }
         public DateTime? DeletedAt { get; set; }
         public Category Category { get; set; } = null!;
+        public uint? Version { get; set; }
     }
 }

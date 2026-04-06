@@ -16,5 +16,6 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public int UsageLimit { get; set; }
+        public uint? Version { get; set; }
     }
 }

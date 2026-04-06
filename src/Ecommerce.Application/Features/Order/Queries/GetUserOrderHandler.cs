@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Ecommerce.Application.Features.Order.Queries
 {
     public record OrderItem();
-    public record UserOrder(Guid Id, decimal TotalAmount, string Status, DateTime CreatedAt);
+    public record UserOrder(Guid Id, decimal TotalAmount, decimal? DiscountAmount, decimal FinalAmount, string Status, DateTime CreatedAt);
     public record GetUserOrderResponse(string Message, List<UserOrder> Data);
     public record GetUserOrderQuery([property: JsonIgnore] Guid UserId) : IRequest<GetUserOrderResponse>;
 
@@ -18,7 +18,7 @@ namespace Ecommerce.Application.Features.Order.Queries
         {
             var userOrders = await context.Orders
                 .Where(o => o.UserId == request.UserId)
-                .Select(o => new UserOrder(o.Id, o.TotalAmount, o.Status, o.CreatedAt))
+                .Select(o => new UserOrder(o.Id, o.TotalAmount, o.DiscountAmount, o.FinalAmount, o.Status, o.CreatedAt))
                 .ToListAsync(cancellationToken);
             return new GetUserOrderResponse("Get user order success", userOrders);
         }

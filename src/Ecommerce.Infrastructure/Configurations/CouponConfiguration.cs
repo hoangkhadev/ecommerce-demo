@@ -13,6 +13,8 @@ namespace Ecommerce.Infrastructure.Configurations
             builder.HasKey(x => x.Id);
 
             builder.HasIndex(x => x.Code).IsUnique();
+
+            builder.Property(x => x.Version).IsRowVersion();
         }
     }
 }

@@ -30,6 +30,8 @@ namespace Ecommerce.Application.Features.Order.Commands
                     }
 
                     var cartItems = cart.CartItems.ToList();
+                    decimal totalAmount = cartItems.Sum(ci => ci.Product.Price * ci.Quantity);
+                    decimal discountAmount = 0;
 
                     // Check stock
                     foreach (var item in cartItems)
@@ -38,15 +40,38 @@ namespace Ecommerce.Application.Features.Order.Commands
                         {
                             throw new InvalidOperationException($"Product '{item.Product.Name}' is out of stock (Available: {item.Product.Stock})");
                         }
-                        await context.Products.Where(p => p.Id == item.Id && p.Stock >= item.Quantity)
-                            .ExecuteUpdateAsync(s => s.SetProperty(p => p.Stock, p => p.Stock - item.Quantity), cancellationToken);
+                        item.Product.Stock -= item.Quantity;
                     }
 
-                    // Create order
+                    if (!string.IsNullOrEmpty(cart.AppliedCouponCode))
+                    {
+                        var coupon = await context.Coupons.FirstOrDefaultAsync(
+                            x => x.Code == cart.AppliedCouponCode && x.UsageLimit >= 0, cancellationToken);
+
+                        if (coupon == null || coupon.UsageLimit <= 0
+                        || DateTime.UtcNow < coupon.StartDate || DateTime.UtcNow > coupon.EndDate
+                        || totalAmount < coupon.MinOrderValue)
+                        {
+                            throw new InvalidOperationException("Coupon is invalid, expired or minimum value not met.");
+                        }
+
+                        discountAmount = coupon.DiscountType == nameof(DisCountType.PERCENTAGE)
+                        ? totalAmount * (coupon.Value / 100)
+                        : coupon.Value;
+
+                        if (discountAmount > totalAmount) discountAmount = totalAmount;
+
+                        coupon.UsageLimit -= 1;
+                    }
+
                     var order = new OrderEntity
+                    // Create order
                     {
                         UserId = request.UserId,
-                        TotalAmount = cartItems.Sum(ci => ci.Product.Price * ci.Quantity),
+                        TotalAmount = totalAmount,
+                        DiscountAmount = discountAmount,
+                        FinalAmount = totalAmount - discountAmount,
+                        AppliedCouponCode = cart.AppliedCouponCode,
                         OrderItems = [..cartItems.Select(ci => new OrderItem
                         {
                             ProductId = ci.ProductId,
@@ -59,8 +84,16 @@ namespace Ecommerce.Application.Features.Order.Commands
 
                     // Clear items from cart
                     context.CartItems.RemoveRange(cartItems);
+                    cart.AppliedCouponCode = null;
 
-                    await context.SaveChangesAsync(cancellationToken);
+                    try
+                    {
+                        await context.SaveChangesAsync(cancellationToken);
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        throw new InvalidOperationException("Data was modified by another user. Please try again.");
+                    }
 
                     await transaction.CommitAsync(cancellationToken);
 

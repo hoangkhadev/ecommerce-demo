@@ -29,6 +29,8 @@ namespace Ecommerce.Infrastructure.Configurations
             builder.Property(p => p.Stock)
                 .HasDefaultValue(0);
 
+            builder.Property(p => p.Version).IsRowVersion();
+
             builder.HasQueryFilter(p => p.DeletedAt == null);
 
             builder.HasOne(p => p.Category)

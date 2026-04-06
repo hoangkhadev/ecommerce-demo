@@ -15,6 +15,9 @@
         public Guid UserId { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public decimal TotalAmount { get; set; }
+        public decimal? DiscountAmount { get; set; }
+        public decimal FinalAmount { get; set; }
+        public string? AppliedCouponCode { get; set; }
         public string Status { get; set; } = OrderStatus.Pending.ToString();
         public List<OrderItem> OrderItems { get; set; } = [];
     }
