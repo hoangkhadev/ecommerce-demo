@@ -12,6 +12,7 @@ namespace Ecommerce.Domain.Entities
         public Guid CategoryId { get; set; }
         public DateTime? DeletedAt { get; set; }
         public Category Category { get; set; } = null!;
+        public Review[] Reviews { get; set; } = null!;
         public uint? Version { get; set; }
     }
 }

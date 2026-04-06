@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Api.Endpoints.Coupon;
+using Ecommerce.Api.Endpoints.Review;
 
 namespace Ecommerce.Api.Endpoints
 {
@@ -18,6 +19,7 @@ namespace Ecommerce.Api.Endpoints
             }
 
             app.MapCouponEndpoints();
+            app.MapReviewEndpoints();
         }
     }
 }
