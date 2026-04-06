@@ -19,11 +19,12 @@ namespace Ecommerce.Application.Features.Order.Commands
                 using var transaction = await context.BeginTransactionAsync(cancellationToken);
                 try
                 {
-                    // Get user cart
+                    var user = await context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken)
+                       ?? throw new InvalidOperationException("User not found");
+
                     var cart = await context.Carts
                         .Include(c => c.CartItems).ThenInclude(ci => ci.Product)
                         .FirstOrDefaultAsync(c => c.UserId == request.UserId, cancellationToken);
-
                     if (cart is null || cart.CartItems is null || cart.CartItems.Count == 0)
                     {
                         throw new InvalidOperationException("Cart is empty");
@@ -33,7 +34,6 @@ namespace Ecommerce.Application.Features.Order.Commands
                     decimal totalAmount = cartItems.Sum(ci => ci.Product.Price * ci.Quantity);
                     decimal discountAmount = 0;
 
-                    // Check stock
                     foreach (var item in cartItems)
                     {
                         if (item.Product.Stock < item.Quantity)
@@ -64,8 +64,16 @@ namespace Ecommerce.Application.Features.Order.Commands
                         coupon.UsageLimit -= 1;
                     }
 
+                    if (user.Rank == nameof(RankEnum.Gold))
+                    {
+                        discountAmount += (totalAmount * (5 / 100));
+                    }
+                    else if (user.Rank == nameof(RankEnum.Dinamond))
+                    {
+                        discountAmount += (totalAmount * (10 / 100));
+                    }
+
                     var order = new OrderEntity
-                    // Create order
                     {
                         UserId = request.UserId,
                         TotalAmount = totalAmount,
@@ -82,7 +90,6 @@ namespace Ecommerce.Application.Features.Order.Commands
 
                     context.Orders.Add(order);
 
-                    // Clear items from cart
                     context.CartItems.RemoveRange(cartItems);
                     cart.AppliedCouponCode = null;
 

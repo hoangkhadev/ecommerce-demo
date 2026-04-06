@@ -27,6 +27,7 @@ namespace Ecommerce.Infrastructure
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<ICouponService, CouponService>();
+            services.AddScoped<ILoyaltyService, LoyaltyService>();
 
             return services;
         }

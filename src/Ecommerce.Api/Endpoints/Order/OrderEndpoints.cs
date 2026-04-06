@@ -1,4 +1,5 @@
 ﻿using Ecommerce.Application.Features.Order.Commands;
+using Ecommerce.Application.Features.Order.Commands.UpdateStatusOrder;
 using Ecommerce.Application.Features.Order.Queries;
 using MediatR;
 using System.Security.Claims;
@@ -30,6 +31,16 @@ namespace Ecommerce.Api.Endpoints.Order
             }).WithSummary("Get current user order")
             .Produces<GetUserOrderResponse>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status500InternalServerError);
+
+            app.MapPatch("/api/v1/admin/order/{orderId:guid}", async (Guid orderId, UpdateStatusOrderCommand command, ISender sender) =>
+            {
+                var response = await sender.Send(command with { OrderId = orderId });
+                return Results.Ok(response);
+            }).WithTags("Order")
+            .WithSummary("Update status order")
+            .RequireAuthorization("AdminOnly")
+            .Produces<GetUserOrderResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status500InternalServerError); ;
         }
     }
 }
