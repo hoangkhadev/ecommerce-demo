@@ -13,6 +13,7 @@ namespace Ecommerce.Application.Common.Interfaces
         DbSet<CartItem> CartItems { get; }
         DbSet<Order> Orders { get; }
         DbSet<OrderItem> OrderItems { get; }
+        DbSet<Coupon> Coupons { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);

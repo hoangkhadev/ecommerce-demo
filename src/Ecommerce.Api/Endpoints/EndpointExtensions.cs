@@ -1,4 +1,6 @@
-﻿namespace Ecommerce.Api.Endpoints
+﻿using Ecommerce.Api.Endpoints.Coupon;
+
+namespace Ecommerce.Api.Endpoints
 {
     public static class EndpointExtensions
     {
@@ -14,6 +16,8 @@
                 var instance = Activator.CreateInstance(type) as IEndpointDefinition;
                 instance?.DefineEndpoints(app);
             }
+
+            app.MapCouponEndpoints();
         }
     }
 }
